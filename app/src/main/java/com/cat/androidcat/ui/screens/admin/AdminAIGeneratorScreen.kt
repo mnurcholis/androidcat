@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cat.androidcat.data.model.CategoryDto
 import com.cat.androidcat.ui.components.CatButton
+import com.cat.androidcat.ui.components.FiguralOptionThumbnail
+import com.cat.androidcat.ui.components.FiguralQuestionView
 import com.cat.androidcat.ui.theme.*
 import com.cat.androidcat.util.MathFormatter
 import com.cat.androidcat.viewmodel.AdminViewModel
@@ -395,10 +397,16 @@ fun AdminAIGeneratorScreen(
                                 color = TextPrimary
                             )
 
+                            if (q.figuralData != null) {
+                                Spacer(modifier = Modifier.height(10.dp))
+                                FiguralQuestionView(figuralData = q.figuralData)
+                            }
+
                             Spacer(modifier = Modifier.height(10.dp))
 
                             q.options.forEach { opt ->
                                 val isCorrect = opt.key.equals(q.correctAnswer, ignoreCase = true)
+                                val figuralOpt = q.figuralData?.options?.get(opt.key)
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -414,6 +422,13 @@ fun AdminAIGeneratorScreen(
                                         fontSize = 13.sp,
                                         color = if (isCorrect) CatGreen else TextPrimary
                                     )
+                                    if (figuralOpt != null && figuralOpt.shapes.isNotEmpty()) {
+                                        FiguralOptionThumbnail(
+                                            optionItem = figuralOpt,
+                                            size = 40.dp,
+                                            modifier = Modifier.padding(end = 8.dp)
+                                        )
+                                    }
                                     Text(
                                         text = MathFormatter.format(opt.value),
                                         fontSize = 13.sp,

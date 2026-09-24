@@ -20,6 +20,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cat.androidcat.ui.components.FiguralOptionThumbnail
+import com.cat.androidcat.ui.components.FiguralQuestionView
 import com.cat.androidcat.ui.theme.*
 import com.cat.androidcat.util.MathFormatter
 import com.cat.androidcat.viewmodel.AdminViewModel
@@ -119,11 +121,41 @@ fun AdminQuestionsScreen(
                         )
                     }
                     items(state.categories) { cat ->
+                        val isParentActive = state.selectedCategoryFilter == cat.id || 
+                                              state.selectedCategoryFilter == cat.name ||
+                                              cat.allChildren.any { it.id == state.selectedCategoryFilter }
                         FilterChip(
-                            selected = state.selectedCategoryFilter == cat.id || state.selectedCategoryFilter == cat.name,
+                            selected = isParentActive,
                             onClick = { viewModel.filterByCategory(cat.id) },
                             label = { Text(cat.name, fontSize = 12.sp) }
                         )
+                    }
+                }
+
+                // Subcategory Filter Chips (if parent is selected)
+                val activeParent = state.categories.find { it.id == state.selectedCategoryFilter || it.name == state.selectedCategoryFilter }
+                    ?: state.categories.find { cat -> cat.allChildren.any { it.id == state.selectedCategoryFilter } }
+
+                if (activeParent != null && activeParent.allChildren.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        item {
+                            FilterChip(
+                                selected = state.selectedCategoryFilter == activeParent.id,
+                                onClick = { viewModel.filterByCategory(activeParent.id) },
+                                label = { Text("Semua ${activeParent.name}", fontSize = 11.sp) }
+                            )
+                        }
+                        items(activeParent.allChildren) { sub ->
+                            FilterChip(
+                                selected = state.selectedCategoryFilter == sub.id,
+                                onClick = { viewModel.filterByCategory(sub.id) },
+                                label = { Text(sub.name, fontSize = 11.sp) }
+                            )
+                        }
                     }
                 }
             }
@@ -210,6 +242,11 @@ fun AdminQuestionsScreen(
                                     color = TextPrimary
                                 )
 
+                                if (q.figuralData != null) {
+                                    Spacer(modifier = Modifier.height(10.dp))
+                                    FiguralQuestionView(figuralData = q.figuralData)
+                                }
+
                                 if (!q.correctAnswer.isNullOrBlank()) {
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
@@ -231,6 +268,7 @@ fun AdminQuestionsScreen(
 
                                     q.options.forEach { opt ->
                                         val isCorrect = opt.key.equals(q.correctAnswer, ignoreCase = true)
+                                        val figuralOpt = q.figuralData?.options?.get(opt.key)
                                         Row(
                                             modifier = Modifier
                                                 .fillMaxWidth()
@@ -246,6 +284,13 @@ fun AdminQuestionsScreen(
                                                 fontSize = 13.sp,
                                                 color = if (isCorrect) CatGreen else TextPrimary
                                             )
+                                            if (figuralOpt != null && figuralOpt.shapes.isNotEmpty()) {
+                                                FiguralOptionThumbnail(
+                                                    optionItem = figuralOpt,
+                                                    size = 36.dp,
+                                                    modifier = Modifier.padding(end = 8.dp)
+                                                )
+                                            }
                                             Text(
                                                 text = MathFormatter.format(opt.value),
                                                 fontSize = 13.sp,

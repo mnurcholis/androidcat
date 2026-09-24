@@ -64,7 +64,7 @@ fun LoginScreen(
                     .height(220.dp)
                     .background(
                         Brush.verticalGradient(
-                            listOf(PrimaryBlue, AccentIndigo)
+                            listOf(PrimaryEmeraldDark, BackgroundLight)
                         )
                     ),
                 contentAlignment = Alignment.Center

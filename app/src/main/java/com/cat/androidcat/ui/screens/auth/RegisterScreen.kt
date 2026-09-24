@@ -64,7 +64,7 @@ fun RegisterScreen(
                     .height(180.dp)
                     .background(
                         Brush.verticalGradient(
-                            listOf(PrimaryBlue, AccentIndigo)
+                            listOf(PrimaryEmeraldDark, BackgroundLight)
                         )
                     ),
                 contentAlignment = Alignment.Center

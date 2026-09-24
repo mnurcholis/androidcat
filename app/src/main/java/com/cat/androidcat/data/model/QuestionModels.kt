@@ -15,7 +15,34 @@ data class QuestionDto(
     @SerializedName("explanation") val explanation: String? = null,
     @SerializedName("category") val category: String? = null,
     @SerializedName("categoryId") val categoryId: String? = null,
-    @SerializedName("categoryRel") val categoryRel: CategoryDto? = null
+    @SerializedName("categoryRel") val categoryRel: CategoryDto? = null,
+    @SerializedName("figuralData") val figuralData: FiguralDataDto? = null
+)
+
+data class FiguralShapeDto(
+    @SerializedName("shape") val shape: String = "circle",
+    @SerializedName("fill") val fill: String = "solid",
+    @SerializedName("rotation") val rotation: Float = 0f,
+    @SerializedName("size") val size: String = "medium",
+    @SerializedName("position") val position: String = "center"
+)
+
+data class FiguralCellDto(
+    @SerializedName("row") val row: Int = 0,
+    @SerializedName("col") val col: Int = 0,
+    @SerializedName("index") val index: Int = 0,
+    @SerializedName("isMissing") val isMissing: Boolean = false,
+    @SerializedName("shapes") val shapes: List<FiguralShapeDto> = emptyList()
+)
+
+data class FiguralOptionItemDto(
+    @SerializedName("shapes") val shapes: List<FiguralShapeDto> = emptyList()
+)
+
+data class FiguralDataDto(
+    @SerializedName("type") val type: String = "grid_3x3",
+    @SerializedName("questionGrid") val questionGrid: List<FiguralCellDto> = emptyList(),
+    @SerializedName("options") val options: Map<String, FiguralOptionItemDto> = emptyMap()
 )
 
 data class GenerateAiQuestionsRequest(

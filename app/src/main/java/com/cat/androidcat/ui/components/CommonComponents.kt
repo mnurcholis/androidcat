@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cat.androidcat.data.model.FiguralOptionItemDto
 import com.cat.androidcat.ui.theme.*
 
 @Composable
@@ -68,7 +69,8 @@ fun OptionItem(
     onSelect: () -> Unit,
     modifier: Modifier = Modifier,
     isCorrectAnswer: Boolean? = null,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    figuralOptionItem: FiguralOptionItemDto? = null
 ) {
     val borderColor by animateColorAsState(
         targetValue = when {
@@ -114,7 +116,7 @@ fun OptionItem(
                         isCorrectAnswer == true -> CatGreen
                         isCorrectAnswer == false && isSelected -> CatRed
                         isSelected -> PrimaryBlue
-                        else -> BackgroundLight
+                        else -> SurfaceCardElevated
                     }
                 ),
             contentAlignment = Alignment.Center
@@ -129,6 +131,14 @@ fun OptionItem(
         }
 
         Spacer(modifier = Modifier.width(12.dp))
+
+        if (figuralOptionItem != null && figuralOptionItem.shapes.isNotEmpty()) {
+            FiguralOptionThumbnail(
+                optionItem = figuralOptionItem,
+                size = 52.dp,
+                modifier = Modifier.padding(end = 12.dp)
+            )
+        }
 
         Text(
             text = optionText,

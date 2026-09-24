@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cat.androidcat.ui.components.CatButton
+import com.cat.androidcat.ui.components.FiguralQuestionView
 import com.cat.androidcat.ui.components.OptionItem
 import com.cat.androidcat.ui.components.TimerBadge
 import com.cat.androidcat.ui.theme.*
@@ -213,14 +214,20 @@ fun ExamScreen(
                     colors = CardDefaults.cardColors(containerColor = SurfaceCard),
                     elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
-                    Text(
-                        text = MathFormatter.format(currentQuestion.text),
-                        fontSize = 16.sp,
-                        lineHeight = 25.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = TextPrimary,
-                        modifier = Modifier.padding(18.dp)
-                    )
+                    Column(modifier = Modifier.padding(18.dp)) {
+                        Text(
+                            text = MathFormatter.format(currentQuestion.text),
+                            fontSize = 16.sp,
+                            lineHeight = 25.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = TextPrimary
+                        )
+
+                        if (currentQuestion.figuralData != null) {
+                            Spacer(modifier = Modifier.height(14.dp))
+                            FiguralQuestionView(figuralData = currentQuestion.figuralData)
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -236,12 +243,15 @@ fun ExamScreen(
                         else null
                     } else null
 
+                    val figuralOpt = currentQuestion.figuralData?.options?.get(opt.key)
+
                     OptionItem(
                         optionKey = opt.key,
                         optionText = MathFormatter.format(opt.value),
                         isSelected = isOptSelected,
                         isCorrectAnswer = isCorrectIndicator,
                         onSelect = { viewModel.selectOption(opt.key) },
+                        figuralOptionItem = figuralOpt,
                         modifier = Modifier.padding(bottom = 10.dp)
                     )
                 }
