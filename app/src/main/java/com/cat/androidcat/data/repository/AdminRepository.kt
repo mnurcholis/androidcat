@@ -27,6 +27,12 @@ class AdminRepository(
             }
             return "Error HTTP ${e.code()}"
         }
+        if (e is java.net.SocketTimeoutException) {
+            return "Koneksi timeout. AI membutuhkan waktu lebih lama untuk membuat soal. Silakan coba lagi atau kurangi jumlah soal."
+        }
+        if (e is com.google.gson.JsonSyntaxException) {
+            return "Format respon data tidak valid. Silakan coba lagi."
+        }
         return e.localizedMessage ?: "Terjadi kesalahan sistem."
     }
 
@@ -48,7 +54,8 @@ class AdminRepository(
         count: Int = 5,
         difficulty: String = "medium",
         apiKey: String? = null,
-        customInstructions: String? = null
+        customInstructions: String? = null,
+        model: String? = "gemini-2.5-flash"
     ): Result<List<QuestionDto>> = withContext(Dispatchers.IO) {
         try {
             val response = api.generateAiQuestions(
@@ -58,7 +65,8 @@ class AdminRepository(
                     count = count,
                     difficulty = difficulty,
                     apiKey = apiKey,
-                    customInstructions = customInstructions
+                    customInstructions = customInstructions,
+                    model = model
                 )
             )
             Result.success(response)

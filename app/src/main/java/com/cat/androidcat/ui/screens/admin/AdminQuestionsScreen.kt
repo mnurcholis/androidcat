@@ -284,7 +284,7 @@ fun AdminQuestionsScreen(
                                                 fontSize = 13.sp,
                                                 color = if (isCorrect) CatGreen else TextPrimary
                                             )
-                                            if (figuralOpt != null && figuralOpt.shapes.isNotEmpty()) {
+                                            if (!figuralOpt?.shapes.isNullOrEmpty()) {
                                                 FiguralOptionThumbnail(
                                                     optionItem = figuralOpt,
                                                     size = 36.dp,

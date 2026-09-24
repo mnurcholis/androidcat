@@ -32,17 +32,17 @@ data class FiguralCellDto(
     @SerializedName("col") val col: Int = 0,
     @SerializedName("index") val index: Int = 0,
     @SerializedName("isMissing") val isMissing: Boolean = false,
-    @SerializedName("shapes") val shapes: List<FiguralShapeDto> = emptyList()
+    @SerializedName("shapes") val shapes: List<FiguralShapeDto>? = emptyList()
 )
 
 data class FiguralOptionItemDto(
-    @SerializedName("shapes") val shapes: List<FiguralShapeDto> = emptyList()
+    @SerializedName("shapes") val shapes: List<FiguralShapeDto>? = emptyList()
 )
 
 data class FiguralDataDto(
     @SerializedName("type") val type: String = "grid_3x3",
-    @SerializedName("questionGrid") val questionGrid: List<FiguralCellDto> = emptyList(),
-    @SerializedName("options") val options: Map<String, FiguralOptionItemDto> = emptyMap()
+    @SerializedName("questionGrid") val questionGrid: List<FiguralCellDto>? = emptyList(),
+    @SerializedName("options") val options: Map<String, FiguralOptionItemDto>? = emptyMap()
 )
 
 data class GenerateAiQuestionsRequest(
@@ -52,7 +52,7 @@ data class GenerateAiQuestionsRequest(
     @SerializedName("difficulty") val difficulty: String = "medium",
     @SerializedName("customInstructions") val customInstructions: String? = null,
     @SerializedName("apiKey") val apiKey: String? = null,
-    @SerializedName("model") val model: String? = null
+    @SerializedName("model") val model: String? = "gemini-2.5-flash"
 )
 
 data class BatchCreateQuestionsRequest(

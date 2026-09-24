@@ -51,6 +51,15 @@ fun AdminAIGeneratorScreen(
     var showApiKeyText by remember { mutableStateOf(false) }
     var customInstructions by remember { mutableStateOf("") }
 
+    var selectedModel by remember { mutableStateOf(state.selectedModel) }
+    var expandedModelDropdown by remember { mutableStateOf(false) }
+
+    val modelOptions = listOf(
+        "gemini-2.5-flash" to "Gemini 2.5 Flash (Paling Cepat & Stabil)",
+        "gemini-2.0-flash" to "Gemini 2.0 Flash (Generasi 2.0)",
+        "gemini-1.5-flash" to "Gemini 1.5 Flash (Standar)"
+    )
+
     // Initialize selected parent category
     LaunchedEffect(state.categories) {
         if (state.categories.isNotEmpty() && selectedParentCategory == null) {
@@ -264,7 +273,72 @@ fun AdminAIGeneratorScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // 6. Optional API Key Toggle
+                    // 6. Versi Model Gemini AI
+                    Text("6. Model AI", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextSecondary)
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    ExposedDropdownMenuBox(
+                        expanded = expandedModelDropdown,
+                        onExpandedChange = { expandedModelDropdown = !expandedModelDropdown }
+                    ) {
+                        OutlinedTextField(
+                            value = modelOptions.find { it.first == selectedModel }?.second ?: selectedModel,
+                            onValueChange = {},
+                            readOnly = true,
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedModelDropdown) },
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+
+                        ExposedDropdownMenu(
+                            expanded = expandedModelDropdown,
+                            onDismissRequest = { expandedModelDropdown = false }
+                        ) {
+                            modelOptions.forEach { (modKey, modLabel) ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = modLabel,
+                                            fontWeight = if (selectedModel == modKey) FontWeight.Bold else FontWeight.Normal
+                                        )
+                                    },
+                                    onClick = {
+                                        selectedModel = modKey
+                                        viewModel.setAiModel(modKey)
+                                        expandedModelDropdown = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    val isFiguralSelected = (selectedSubcategory?.name ?: "").contains("Figural", ignoreCase = true) ||
+                            (selectedParentCategory?.name ?: "").contains("Figural", ignoreCase = true) ||
+                            topic.contains("Figural", ignoreCase = true)
+
+                    if (isFiguralSelected) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(AccentIndigoLight)
+                                .padding(12.dp)
+                        ) {
+                            Text(
+                                text = "💡 Tips Soal Figural: Format matriks pola gambar memerlukan token cukup besar. Disarankan menggunakan model Gemini 2.5 Flash dengan 3-5 butir soal agar proses generate cepat & mulus.",
+                                fontSize = 12.sp,
+                                color = AccentIndigo,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // 7. Optional API Key Toggle
                     TextButton(
                         onClick = { showApiKeyField = !showApiKeyField },
                         contentPadding = PaddingValues(0.dp)
@@ -325,7 +399,8 @@ fun AdminAIGeneratorScreen(
                                 count = count,
                                 difficulty = difficulty,
                                 apiKey = apiKeyInput.ifBlank { null },
-                                customInstructions = customInstructions.ifBlank { null }
+                                customInstructions = customInstructions.ifBlank { null },
+                                model = selectedModel
                             )
                         },
                         isLoading = state.isGenerating,
@@ -422,7 +497,7 @@ fun AdminAIGeneratorScreen(
                                         fontSize = 13.sp,
                                         color = if (isCorrect) CatGreen else TextPrimary
                                     )
-                                    if (figuralOpt != null && figuralOpt.shapes.isNotEmpty()) {
+                                    if (!figuralOpt?.shapes.isNullOrEmpty()) {
                                         FiguralOptionThumbnail(
                                             optionItem = figuralOpt,
                                             size = 40.dp,

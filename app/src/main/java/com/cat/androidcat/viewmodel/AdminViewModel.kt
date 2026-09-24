@@ -27,6 +27,7 @@ data class AdminUiState(
     val searchQuery: String = "",
     val generatedPreview: List<QuestionDto> = emptyList(),
     val customApiKey: String = "",
+    val selectedModel: String = "gemini-2.5-flash",
     val error: String? = null,
     val successMessage: String? = null
 )
@@ -40,7 +41,8 @@ class AdminViewModel(
 
     private val _uiState = MutableStateFlow(
         AdminUiState(
-            customApiKey = prefs.getString("gemini_api_key", "") ?: ""
+            customApiKey = prefs.getString("gemini_api_key", "") ?: "",
+            selectedModel = prefs.getString("gemini_model", "gemini-2.5-flash") ?: "gemini-2.5-flash"
         )
     )
     val uiState: StateFlow<AdminUiState> = _uiState.asStateFlow()
@@ -52,6 +54,11 @@ class AdminViewModel(
     fun saveApiKey(key: String) {
         prefs.edit().putString("gemini_api_key", key.trim()).apply()
         _uiState.value = _uiState.value.copy(customApiKey = key.trim())
+    }
+
+    fun setAiModel(model: String) {
+        prefs.edit().putString("gemini_model", model).apply()
+        _uiState.value = _uiState.value.copy(selectedModel = model)
     }
 
     fun loadDashboardData(categoryFilter: String? = _uiState.value.selectedCategoryFilter) {
@@ -100,12 +107,14 @@ class AdminViewModel(
         count: Int,
         difficulty: String,
         apiKey: String?,
-        customInstructions: String? = null
+        customInstructions: String? = null,
+        model: String? = null
     ) {
         val effectiveKey = apiKey?.ifBlank { null } ?: _uiState.value.customApiKey.ifBlank { null }
         if (effectiveKey != null) {
             saveApiKey(effectiveKey)
         }
+        val effectiveModel = model ?: _uiState.value.selectedModel
 
         _uiState.value = _uiState.value.copy(
             isGenerating = true,
@@ -120,7 +129,8 @@ class AdminViewModel(
                 count = count,
                 difficulty = difficulty,
                 apiKey = effectiveKey,
-                customInstructions = customInstructions
+                customInstructions = customInstructions,
+                model = effectiveModel
             )
 
             result.onSuccess { generatedList ->

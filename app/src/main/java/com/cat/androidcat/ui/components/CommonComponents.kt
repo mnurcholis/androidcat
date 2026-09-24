@@ -132,7 +132,7 @@ fun OptionItem(
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        if (figuralOptionItem != null && figuralOptionItem.shapes.isNotEmpty()) {
+        if (!figuralOptionItem?.shapes.isNullOrEmpty()) {
             FiguralOptionThumbnail(
                 optionItem = figuralOptionItem,
                 size = 52.dp,

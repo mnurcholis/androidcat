@@ -17,10 +17,10 @@ val PrimaryBlue = PrimaryEmerald
 val PrimaryBlueDark = PrimaryEmeraldDark
 val PrimaryBlueLight = PrimaryEmeraldLight
 
-// 2. Aksen Kedua: Golden Amber (Khas Jurus Al Faiz & Poin Highlight)
+// 2. Aksen Kedua: Golden Amber (Poin Highlight & Trik Cepat)
 val AccentAmber = Color(0xFFF59E0B)
 val AccentAmberDark = Color(0xFFD97706)
-val AccentAmberLight = Color(0xFF382606)        // Latar Kotak Jurus Cepat Al Faiz
+val AccentAmberLight = Color(0xFF382606)        // Latar Kotak Tips Cepat
 val AccentAmberText = Color(0xFFFCD34D)         // Teks Kuning Keemasan Menyala
 
 // Kompatibilitas Alias

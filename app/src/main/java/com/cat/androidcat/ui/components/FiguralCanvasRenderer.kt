@@ -39,6 +39,8 @@ fun FiguralQuestionView(
     figuralData: FiguralDataDto,
     modifier: Modifier = Modifier
 ) {
+    val grid = figuralData.questionGrid ?: emptyList()
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -56,7 +58,7 @@ fun FiguralQuestionView(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                figuralData.questionGrid.sortedBy { it.index }.forEach { cell ->
+                grid.sortedBy { it.index }.forEach { cell ->
                     FiguralCellBox(
                         cell = cell,
                         cellSize = 56.dp
@@ -65,7 +67,7 @@ fun FiguralQuestionView(
             }
         } else {
             // Standard 3x3 Grid (Figural 9 Kotak)
-            val sortedCells = figuralData.questionGrid
+            val sortedCells = grid
 
             Column(
                 modifier = Modifier
@@ -122,7 +124,7 @@ fun FiguralCellBox(
             )
         } else {
             FiguralShapesCanvas(
-                shapes = cell.shapes,
+                shapes = cell.shapes ?: emptyList(),
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -135,7 +137,8 @@ fun FiguralOptionThumbnail(
     size: Dp = 56.dp,
     modifier: Modifier = Modifier
 ) {
-    if (optionItem == null || optionItem.shapes.isEmpty()) return
+    val shapes = optionItem?.shapes ?: emptyList()
+    if (shapes.isEmpty()) return
 
     Box(
         modifier = modifier
@@ -146,7 +149,7 @@ fun FiguralOptionThumbnail(
         contentAlignment = Alignment.Center
     ) {
         FiguralShapesCanvas(
-            shapes = optionItem.shapes,
+            shapes = shapes,
             modifier = Modifier.fillMaxSize()
         )
     }
@@ -154,19 +157,20 @@ fun FiguralOptionThumbnail(
 
 @Composable
 fun FiguralShapesCanvas(
-    shapes: List<FiguralShapeDto>,
+    shapes: List<FiguralShapeDto>?,
     modifier: Modifier = Modifier,
     primaryColor: Color = TextPrimary,
     strokeWidthDp: Dp = 2.dp
 ) {
+    val items = shapes ?: emptyList()
     Canvas(modifier = modifier.padding(4.dp)) {
         val strokeWidthPx = strokeWidthDp.toPx()
         val w = size.width
         val h = size.height
         val minDim = minOf(w, h)
 
-        for (item in shapes) {
-            val scaleFactor = when (item.size.lowercase()) {
+        for (item in items) {
+            val scaleFactor = when ((item.size ?: "medium").lowercase()) {
                 "small" -> 0.35f
                 "large" -> 0.85f
                 else -> 0.60f // medium
@@ -176,19 +180,19 @@ fun FiguralShapesCanvas(
             val shapeDiameter = shapeRadius * 2f
 
             // Position offset relative to center
-            val cx = when (item.position.lowercase()) {
+            val cx = when ((item.position ?: "center").lowercase()) {
                 "left", "top_left", "bottom_left" -> w * 0.30f
                 "right", "top_right", "bottom_right" -> w * 0.70f
                 else -> w * 0.50f
             }
-            val cy = when (item.position.lowercase()) {
+            val cy = when ((item.position ?: "center").lowercase()) {
                 "top", "top_left", "top_right" -> h * 0.30f
                 "bottom", "bottom_left", "bottom_right" -> h * 0.70f
                 else -> h * 0.50f
             }
             val center = Offset(cx, cy)
 
-            val drawStyle: DrawStyle = if (item.fill.equals("solid", ignoreCase = true)) {
+            val drawStyle: DrawStyle = if ((item.fill ?: "solid").equals("solid", ignoreCase = true)) {
                 Fill
             } else {
                 Stroke(width = strokeWidthPx)
@@ -199,7 +203,7 @@ fun FiguralShapesCanvas(
                     rotate(degrees = item.rotation, pivot = center)
                 }
             }) {
-                when (item.shape.lowercase()) {
+                when ((item.shape ?: "circle").lowercase()) {
                     "circle" -> {
                         drawCircle(
                             color = primaryColor,
